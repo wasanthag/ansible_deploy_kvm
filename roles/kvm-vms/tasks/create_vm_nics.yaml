@@ -1,0 +1,2 @@
+- name: create vm nics
+  command: virt-customize -a "{{ current_image.stdout }}" --run-command "{{ nics.value }}"

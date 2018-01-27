@@ -1,0 +1,11 @@
+DEVICE=br-{{ kvm_bridges.br_1.device}}
+TYPE=Bridge
+ONBOOT=yes
+NM_CONTROLLED=no
+DELAY=0
+MACADDR={{ hostvars[inventory_hostname].mac_address }}
+BOOTPROTO=static
+IPADDR={{ hostvars[inventory_hostname].ipaddr }}
+NETMASK={{ hostvars[inventory_hostname].netmask }}
+DNS1={{ dns_server1 }}
+

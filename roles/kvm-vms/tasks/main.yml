@@ -1,0 +1,22 @@
+- name: Copy guest image to KVM server
+  copy:
+    src: ../files/rhel-server-7.4-x86_64-kvm.qcow2
+    dest: "{{ kvm_images_dir}}/"
+    owner: root
+    group: root
+
+- name: Create empty qcow2 file to be backing image
+  command: qemu-img create -f qcow2 "{{ kvm_images_dir }}/rhel-backing-image.qcow2" 100G
+  args:
+    creates: "{{ kvm_images_dir }}/rhel-backing-image.qcow2"
+  notify: populate backing file
+
+- name: flush the handlers so the backing file is correct
+  meta: flush_handlers
+
+- name: Create any image clones that we need.
+  include: create_vm.yaml
+  with_dict: "{{ kvm_guests }}"
+  loop_control:
+    loop_var: vms
+

@@ -1,0 +1,24 @@
+- name: install kvm packages
+  yum:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items: "{{ kvm_packages }}"
+
+- name: setup bridge1
+  template:
+    src: br-br1.j2
+    dest: "/etc/sysconfig/network-scripts/ifcfg-br-{{ kvm_bridges.br_1.device }}"
+  notify: restart network
+
+- name: setup bridge1 nics
+  template:
+    src: br1-nic.j2
+    dest: "/etc/sysconfig/network-scripts/ifcfg-{{ kvm_bridges.br_1.device }}"
+  notify: restart network
+
+- name: Start / Enable libvirtd
+  service:
+    name: libvirtd
+    state: started
+    enabled: yes

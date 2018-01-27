@@ -1,0 +1,14 @@
+- hosts: kvm_hypervisors
+  become: true
+  roles:
+    - kvm-hypervisors
+  tags:
+    - install_kvm
+
+- hosts: kvm_hypervisors
+  become: true
+  roles:
+    - kvm-vms
+  tags:
+    - create_kvm_vms
+

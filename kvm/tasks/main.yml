@@ -1,0 +1,41 @@
+- name: create bonds
+  include: create_bond.yml
+  with_dict: "{{ kvm_bonds }}"
+  loop_control:
+    loop_var: bond
+
+- name: setup bridge1
+  template:
+    src: br-br1.j2
+    dest: /etc/sysconfig/network-scripts/ifcfg-br-br1
+  notify: restart network
+
+- name: setup bridge1 nics
+  template:
+    src: br1-nic.j2
+    dest: "/etc/sysconfig/network-scripts/ifcfg-{{ kvm_bridges.br_provision.device }}"
+  notify: restart network
+
+- name: setup bridge2
+  template:
+    src: br-br2.j2
+    dest: /etc/sysconfig/network-scripts/ifcfg-br-br2
+  notify: restart network
+
+- name: setup bridge2 nics
+  template:
+    src: br2-nic.j2
+    dest: "/etc/sysconfig/network-scripts/ifcfg-{{ kvm_bridges.br_publicapi.device }}"
+  notify: restart network
+
+- name: install kvm packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ kvm_packages }}"
+
+- name: Start / Enable libvirtd
+  service:
+    name: libvirtd
+    state: started
+    enabled: yes

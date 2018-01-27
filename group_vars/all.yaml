@@ -1,0 +1,10 @@
+kvm_images_dir: /home/images
+dns_server1: 10.12.32.1
+
+kvm_bridges:
+  br_1:
+    device: em1
+    name: br1
+  br_2:
+    device: em2
+

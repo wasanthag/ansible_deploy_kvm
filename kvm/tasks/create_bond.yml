@@ -1,0 +1,11 @@
+- name: create bond
+  template:
+    src: bond.j2
+    dest: "/etc/sysconfig/network-scripts/ifcfg-{{ bond.value.name }}"
+  notify: restart network
+
+- name: create bond interfaces
+  include: create_bond_interface.yml
+  with_items: "{{ bond.value.interfaces }}"
+  loop_control:
+    loop_var: bond_interface

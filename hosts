@@ -1,0 +1,2 @@
+[kvm_hypervisors]
+10.12.32.21 ipaddr=192.0.2.22 netmask=255.255.255.0 mac_address=b8:2a:72:d3:8f:0b

@@ -1,0 +1,8 @@
+---
+# handlers file for kvm-vms
+- name: populate backing file
+  command: virt-resize --expand /dev/sda1 "{{ kvm_images_dir}}"/rhel-server-7.4-x86_64-kvm.qcow2 "{{ kvm_images_dir }}"/rhel-backing-image.qcow2
+
+- name: remove cloud-init
+  command: "virt-customize -a {{ current_image.stdout }} --run-command 'yum remove cloud-init* -y' --root-password password:{{ vm_root_password }}"
+

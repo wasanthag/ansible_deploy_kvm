@@ -1,0 +1,15 @@
+---
+# handlers file for osp10
+# todo: might be something going on here, after this script is run a second time after VMs exist,
+# those existing VMs throw I/O errors until rebooted.
+- name: populate backing file
+  command: virt-resize --expand /dev/sda1 "{{ kvm_images_path }}"/rhel-guest-image-7.4-x86_64.qcow2 "{{ kvm_images_path }}"/rhel-backing-image.qcow2
+
+- name: remove cloud-init
+  command: "virt-customize -a {{ current_image.stdout }} --run-command 'yum remove cloud-init* -y' --root-password password:{{ vm_root_password }}"
+
+- name: restart network
+  service:
+    name: network
+    state: restarted
+  ignore_errors: yes

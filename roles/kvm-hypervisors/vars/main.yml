@@ -1,0 +1,10 @@
+---
+# vars file for kvm-hypervisors
+kvm_packages:
+  - bridge-utils
+  - libguestfs-tools
+  - libvirt
+  - qemu-kvm
+  - qemu-img
+  - virt-install
+  - libguestfs-xfs

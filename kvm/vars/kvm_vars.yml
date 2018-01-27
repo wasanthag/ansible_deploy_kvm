@@ -1,0 +1,139 @@
+role_packages:
+  - libguestfs-tools
+  - libvirt
+  - qemu-kvm
+  - virt-install
+  - libguestfs-xfs
+
+kvm_images_path: /vms
+
+kvm_bonds:
+  bond0:
+    name: bond0
+    mtu: 1500
+    bond_opts: 'mode=4 miimon=100'
+    interfaces:
+    - enp6s0f0
+    - enp6s0f1
+
+kvm_bridges:
+  br_publicapi:
+    device: bond0.93
+  br_internalapi:
+    device: bond0.81
+  br_provision:
+    device: bond0.80
+  br_storage:
+    device: bond0.85
+
+kvm_guests:
+  director:
+    name: director
+    config: >
+      --ram 32768 --vcpus 4 --os-variant rhel7
+      --disk path=/vms/director.qcow2,device=disk,bus=virtio,format=qcow2
+      --import --noautoconsole --vnc --autostart
+      --bridge  br-publicapi
+      --bridge  br-provision
+      --name director
+    nics:
+      eth0: |
+        cat <<EOF > /etc/sysconfig/network-scripts/ifcfg-eth0
+        DEVICE="eth0"
+        ONBOOT="yes"
+        TYPE="Ethernet"
+        PEERDNS="yes"
+        IPV6INIT="no"
+        IPADDR=10.122.155.100
+        NETMASK=255.255.255.224
+        GATEWAY=10.122.155.97
+        DNS1=64.102.6.247
+        DNS2=173.37.87.157
+        EOF
+      eth1: |
+        cat <<EOF > /etc/sysconfig/network-scripts/ifcfg-eth1
+        DEVICE="eth1"
+        ONBOOT="yes"
+        TYPE="Ethernet"
+        PEERDNS="no"
+        IPV6INIT="no"
+        IPADDR=10.0.235.10
+        NETMASK=255.255.255.0
+        EOF
+  rally:
+    name: rally
+    config: >
+      --ram 8292 --vcpus 4 --os-variant rhel7
+      --disk path=/vms/rally.qcow2,device=disk,bus=virtio,format=qcow2
+      --import --noautoconsole --vnc --autostart
+      --bridge  br-publicapi
+      --bridge  br-provision
+      --bridge  br-internalapi
+      --bridge  br-storage
+      --name rally
+    nics:
+      eth0: |
+        cat <<EOF > /etc/sysconfig/network-scripts/ifcfg-eth0
+        DEVICE="eth0"
+        ONBOOT="yes"
+        TYPE="Ethernet"
+        PEERDNS="yes"
+        IPV6INIT="no"
+        IPADDR=10.122.155.101
+        NETMASK=255.255.255.224
+        GATEWAY=10.122.155.97
+        DNS1=64.102.6.247
+        DNS2=173.37.87.157
+        EOF
+      eth1: |
+        cat <<EOF > /etc/sysconfig/network-scripts/ifcfg-eth1
+        DEVICE="eth1"
+        ONBOOT="yes"
+        TYPE="Ethernet"
+        PEERDNS="no"
+        IPV6INIT="no"
+        IPADDR=10.0.235.11
+        NETMASK=255.255.255.0
+        EOF
+      eth2: |
+        cat <<EOF > /etc/sysconfig/network-scripts/ifcfg-eth2
+        DEVICE="eth2"
+        ONBOOT="yes"
+        TYPE="Ethernet"
+        PEERDNS="no"
+        IPV6INIT="no"
+        IPADDR=10.0.236.11
+        NETMASK=255.255.255.0
+        EOF
+      eth3: |
+        cat <<EOF > /etc/sysconfig/network-scripts/ifcfg-eth3
+        DEVICE="eth3"
+        ONBOOT="yes"
+        TYPE="Ethernet"
+        PEERDNS="no"
+        IPV6INIT="no"
+        IPADDR=10.0.241.11
+        NETMASK=255.255.254.0
+        EOF
+  ceph-install:
+    name: ceph-install
+    config: >
+      --ram 16384 --vcpus 4 --os-variant rhel7
+      --disk path=/vms/ceph-install.qcow2,device=disk,bus=virtio,format=qcow2
+      --import --noautoconsole --vnc --autostart
+      --bridge  br-publicapi
+      --name ceph-install
+    nics:
+      eth0: |
+        cat <<EOF > /etc/sysconfig/network-scripts/ifcfg-eth0
+        DEVICE="eth0"
+        ONBOOT="yes"
+        TYPE="Ethernet"
+        PEERDNS="yes"
+        IPV6INIT="no"
+        IPADDR=10.122.155.102
+        NETMASK=255.255.255.224
+        GATEWAY=10.122.155.97
+        DNS1=64.102.6.247
+        DNS2=173.37.87.157
+        EOF

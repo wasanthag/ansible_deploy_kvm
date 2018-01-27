@@ -1,0 +1,26 @@
+- name: set variable with current image name
+  shell: echo "{{ kvm_images_dir }}/{{ vms.value.name }}.qcow2"
+  register: current_image
+
+- name: Create {{ vms.value.name }}.qcow2 pointing to backing file when image does not exist
+  command: "qemu-img create -f qcow2 -b {{ kvm_images_dir }}/rhel-backing-image.qcow2 {{ current_image.stdout }}"
+  register: imagecreated
+  args:
+    creates: "{{ current_image.stdout }}"
+  notify:
+  - remove cloud-init
+
+- name: create nics
+  include: create_vm_nics.yaml
+  with_dict: "{{ vms.value.nics }}"
+  loop_control:
+    loop_var: nics
+  when: imagecreated.changed
+
+- name: make sure the handlers run before we proceed
+  meta: flush_handlers
+
+- name: create virtual machine in kvm
+  command: virt-install {{ vms.value.config }}
+  args:
+    creates: "/etc/libvirt/qemu/{{ vms.value.name }}.xml"
